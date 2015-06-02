@@ -23,20 +23,19 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        // enable this to use snapshot versions of Gretty:
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
         maven {
             url 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/'
         }
     }
 
     dependencies {
-        classpath ('org.akhikhl.gretty:gretty:1.2.3') {
-                    exclude(module: 'groovy-all')
-                      exclude(module: 'logback-core')
- 					exclude(module: 'logback-classic')
-                      	                     
- 
-                       
-                }
+        //classpath ('org.akhikhl.gretty:gretty:1.2.3') {
+        //}
+
+        classpath 'org.akhikhl.gretty:gretty:+'
+
         //classpath group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.3'
         //  classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.2'
     }
@@ -82,10 +81,9 @@ repositories {
 
     mavenLocal()
     jcenter()
-    maven {
-        url "http://artifactory.pennmutual.com/artifactory/central"
-    }
-    
+    // enable this to use snapshot versions of Gretty:
+    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+      
 }
 
 
