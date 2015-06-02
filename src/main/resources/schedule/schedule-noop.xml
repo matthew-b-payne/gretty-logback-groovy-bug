@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--
+		The AutowiredAnnotationBeanPostProcessor and
+		CommonAnnotationBeanPostProcessor are both included implicitly when
+		using the component-scan element. That means that the two components
+		are autodetected and wired together
+	-->
+
+
+    <!--
+     * <p>The pattern is a list of six single space-separated fields: representing
+     * second, minute, hour, day, month, weekday. Month and weekday names can be
+     * given as the first three letters of the English names.
+
+    0 0 9-17 * * MON-FRI
+    -->
+
+
+    <task:scheduled-tasks scheduler="scheduler">
+      <!--  <task:scheduled ref="exampleTask" method="doSomething" cron="0 57 13 * * MON,FRI"/>
+        <task:scheduled  ref="priceChecker" method="doPriceCheck" cron="0 0 5 ? * MON,FRI"/>
+        <task:scheduled  ref="roleChecker" method="doRoleCheck" cron="0 15 10 ? * SUN,THU"/>
+        <task:scheduled ref="pendingNotifier" method="doNotifyCheck" cron="0 10 11 ? * MON-FRI"/>   -->
+
+        <task:scheduled ref="noopTask" method="doSomething" fixed-rate="150000"/>
+       <!-- <task:scheduled ref="htkAssistantProcessor" method="processAssistants" cron="0 10 11,3 ? * MON-FRI"/>-->
+
+    </task:scheduled-tasks>
+
+    <bean id="noopTask" class="com.pennmutual.services.security.maintenance.NoOpTask" />
+
+
+
+
+</beans>

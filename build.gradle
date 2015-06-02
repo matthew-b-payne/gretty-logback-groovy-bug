@@ -1,0 +1,222 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'project-report'
+apply plugin: 'war'
+//apply plugin: 'jetty'
+apply plugin: 'org.akhikhl.gretty'
+
+
+group = 'services.pml.com'
+
+description = """"""
+
+def targetEnvironment = "dev"
+project.ext.defaultEnviroment = "mo"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+loadConfiguration()
+
+// Required by Tomcat plugin
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/'
+        }
+    }
+
+    dependencies {
+        classpath ('org.akhikhl.gretty:gretty:1.2.3') {
+                    exclude(module: 'groovy-all')
+                      exclude(module: 'logback-core')
+ 					exclude(module: 'logback-classic')
+                      	                     
+ 
+                       
+                }
+        //classpath group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.3'
+        //  classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.2'
+    }
+}
+
+
+
+
+def loadConfiguration() {
+    def targetEnvironment = hasProperty('env') ? env : project.ext.defaultEnviroment
+    def buildInfo = hasProperty('build') ? build : "manual build"
+    project.ext.env = targetEnvironment
+    project.ext.buildInfo = buildInfo
+    project.version = buildInfo
+    project.ext.version = buildInfo
+    System.properties['runtime.environment'] = targetEnvironment
+    logger.info(Logging.LIFECYCLE, 'target environment is: ' + targetEnvironment)
+    def configFile = file('config.groovy')
+    project.ext.config = new ConfigSlurper(targetEnvironment).parse(configFile.toURL())
+    //def configFile = file('$env.groovy')
+    //def config = new ConfigSlurper("$environment").parse(configFile.toURL())
+    //project.ext.config = config
+    loadProperties()
+    printProps() 
+}
+
+def loadProperties() {
+    Properties props = new Properties()
+    props.load(new FileInputStream("src/main/filters/filter-${project.ext.env}.properties"))
+    project.ext.envProps = props
+}
+
+configurations {
+    jetty
+}
+//
+
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'jcenter' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+
+    mavenLocal()
+    jcenter()
+    maven {
+        url "http://artifactory.pennmutual.com/artifactory/central"
+    }
+    
+}
+
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+
+   compile group: 'org.springframework', name: 'spring-core', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-orm', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-aop', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '3.2.10.RELEASE'
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.20'
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.16'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.16'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version: '2.16'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-jaxb', version: '2.16'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.4.5'
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '2.16'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.16'
+    compile group: 'org.glassfish.jersey.ext', name: 'jersey-spring3', version: '2.16'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
+    compile group: 'joda-time', name: 'joda-time', version: '2.0'
+    compile group: 'com.google.guava', name: 'guava', version: '10.0'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.1'
+    compile group: 'commons-digester', name: 'commons-digester', version: '1.8.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.3'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.1.2'
+    compile("com.pennmutual.security:security-client:1.3.79") {
+        exclude(module: 'groovy-all')
+    }
+	compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.2'
+    compile 'org.apache.directory.shared:shared-ldap-client-api:1.0.0-M13'
+    compile 'org.springframework.ldap:spring-ldap-core:2.0.2.RELEASE'
+    compile(group: 'axis', name: 'axis', version: '1.2.1') {
+        exclude(module: 'mail')
+    }
+    compile group: 'jaxrpc', name: 'jaxrpc', version: '1.1'     //used by agent webservice
+    compile group: 'saaj', name: 'saaj', version: '1.2'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.3'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.12'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
+	compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.3' //, classifier:'indy'
+    
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+    gretty(
+            'javax.mail:mail:1.4.5',
+            'commons-dbcp:commons-dbcp:1.2'
+    )
+
+    // We use the awesome Spock testing and specification framework
+    testCompile group: 'org.springframework', name: 'spring-test', version: '3.2.10.RELEASE'
+    testCompile group: 'com.sun.jersey.jersey-test-framework', name: 'jersey-test-fram' +
+            'ework-grizzly2', version: '1.19'
+    testCompile group: 'com.sun.jersey.jersey-test-framework', name: 'jersey-test-framework-core', version: '1.18'
+    testCompile group: 'junit', name: 'junit', version: '4.8.2'
+    testCompile group: 'junitperf', name: 'junitperf', version: '1.8'
+    testCompile group: 'httpunit', name: 'httpunit', version: '1.6.1'
+    testCompile group: 'jnditesthelper', name: 'jnditesthelper', version: '1.0.0'
+
+    testCompile 'junit:junit:4.12'
+}
+sourceSets.main.java.srcDirs = []
+sourceSets.main.groovy.srcDirs = ["src/main/java", "src/main/groovy"]
+
+task printProps << {
+    printProps()
+}
+
+def printProps() {
+    println "*** ----------------------------------"
+    println "*** Environment is set to $project.ext.env"
+    println "*** Version is set to $project.ext.version"
+    println "*** ----------------------------------"
+}
+
+processResources {
+    def combinedProps = (project.properties + project.ext.envProps + [title: 'ProjectInfo', generated: new Date()])
+            .withDefault { key -> '${' + key + '}' }
+//    filesMatching('**/*.properties') {
+//        expand(props)
+//    }
+
+    ['**/ppdConfig.xml', '**/logback.groovy', '**/security.xml', '**/*.properties'].each {
+        filesMatching(it) { expand(combinedProps) }
+    }
+}
+
+processResources.doLast {
+    def pw = new File("build/resources/main/ABOUT").newPrintWriter()
+    pw.println("version : ${project.version}")
+    pw.println("build : ${System.getProperty("build.number")}")
+    pw.println("build date : ${new Date()}")
+    pw.println("builder : ${System.getProperty("user.name")}")
+    pw.println("java : ${System.getProperty("java.specification.version")}")
+    pw.println("env : ${project.getProperties().get('env')}")
+    pw.flush()
+    pw = new File("build/resources/main/VERSION").newPrintWriter()
+    pw.println("${project.version}")
+    pw.flush()
+}
+
+ext {
+    integrationTestContainers = ['tomcat7', 'tomcat8']
+}
+
+
+gretty {
+    port = 9080
+    debugSuspend = false
+    // supported values:
+    jettyXmlFile = 'src/main/resources/jetty.xml'
+    jettyEnvXmlFile = 'src/main/webapp/WEB-INF/jetty-context.xml'
+    contextPath = '/security-service'
+    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
+    scanInterval = 10
+    jvmArgs = ["-Druntime.environment=${System.properties['runtime.environment']} -XX:MaxPermSize=366m"]
+    //jvmArgs = '-Druntime.environment=ls'
+    servletContainer = 'jetty9'
+    managedClassReload = false
+}
+
+
+war {
+    manifest {
+        attributes(
+                'build': "$buildInfo",
+                'build_date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'env': "$env"
+        )
+    }
+}
