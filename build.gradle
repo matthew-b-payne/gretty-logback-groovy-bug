@@ -21,10 +21,12 @@ loadConfiguration()
 // Required by Tomcat plugin
 buildscript {
     repositories {
-        mavenCentral()
-        jcenter()
+       
         // enable this to use snapshot versions of Gretty:
         maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+        mavenCentral()
+        jcenter()
+   
         maven {
             url 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/'
         }
@@ -113,17 +115,13 @@ dependencies {
     compile group: 'commons-digester', name: 'commons-digester', version: '1.8.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.3'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.1.2'
-    compile("com.pennmutual.security:security-client:1.3.79") {
-        exclude(module: 'groovy-all')
-    }
+   
 	compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.2'
     compile 'org.apache.directory.shared:shared-ldap-client-api:1.0.0-M13'
     compile 'org.springframework.ldap:spring-ldap-core:2.0.2.RELEASE'
     compile(group: 'axis', name: 'axis', version: '1.2.1') {
         exclude(module: 'mail')
     }
-    compile group: 'jaxrpc', name: 'jaxrpc', version: '1.1'     //used by agent webservice
-    compile group: 'saaj', name: 'saaj', version: '1.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.3'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.12'
